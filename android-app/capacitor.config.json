@@ -1,0 +1,12 @@
+{
+  "appId": "com.abdultransfer.app",
+  "appName": "AbdulTransfer",
+  "webDir": "www",
+  "server": {
+    "url": "https://abdultransfer.onrender.com",
+    "cleartext": false
+  },
+  "android": {
+    "allowMixedContent": false
+  }
+}
