@@ -214,6 +214,12 @@ async function join(code){
    body:JSON.stringify({code})
   });
   senderToken=d.senderToken;
+  window.dispatchEvent(new CustomEvent("abdultransfer:joined", {
+    detail: {
+        code: code,
+        token: senderToken
+    }
+}));
  }catch(e){
   $("senderError").textContent=e.message;
   document.querySelector(".drop").classList.add("hidden");
@@ -258,6 +264,7 @@ if(codeFromUrl){
  if(/^\d{8}$/.test(codeFromUrl))join(codeFromUrl);
  else{view("sender");$("senderError").textContent="Aktarım bağlantısı geçersiz."}
 }else view("home");
+<script src="/android-transfer.js">
 </script>
 </body>
 </html>
