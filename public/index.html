@@ -2,242 +2,262 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#101827">
-  <title>AbdulTransfer</title>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      padding: 24px 15px;
-      font-family: Arial, sans-serif;
-      background: #101827;
-      color: #f8fafc;
-    }
-    .container { max-width: 650px; margin: 35px auto; }
-    header { text-align: center; margin-bottom: 28px; }
-    .logo { font-size: 48px; }
-    h1 { margin: 8px 0; font-size: 32px; }
-    header p { color: #aab7c8; }
-    .card {
-      background: #1c293b;
-      border: 1px solid #34445a;
-      border-radius: 18px;
-      padding: 22px;
-      margin-bottom: 18px;
-    }
-    h2 { margin-top: 0; font-size: 21px; }
-    button, input[type="text"], input[type="file"] {
-      width: 100%;
-      padding: 14px;
-      border-radius: 10px;
-      font-size: 15px;
-    }
-    button {
-      border: 0;
-      background: #14b8a6;
-      color: #062b29;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 12px;
-    }
-    button:disabled { opacity: .55; cursor: not-allowed; }
-    input[type="text"], input[type="file"] {
-      border: 1px solid #52647b;
-      background: #101827;
-      color: white;
-      margin-top: 8px;
-    }
-    .code {
-      font-size: 34px;
-      letter-spacing: 7px;
-      font-weight: bold;
-      text-align: center;
-      padding: 18px;
-      color: #e5b94e;
-    }
-    .status { color: #aab7c8; margin-top: 12px; line-height: 1.5; }
-    .file {
-      padding: 12px;
-      background: #101827;
-      border-radius: 9px;
-      margin-top: 9px;
-      overflow-wrap: anywhere;
-    }
-    .file a { color: #5eead4; }
-    .small { font-size: 13px; color: #aab7c8; line-height: 1.5; }
-    .hidden { display: none; }
-    footer { text-align: center; color: #8493a8; font-size: 13px; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101827">
+<title>AbdulTransfer</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:22px 14px;background:#0b1220;color:#f4f7fb;font-family:Arial,sans-serif}
+main{max-width:700px;margin:auto}
+header{display:flex;align-items:center;gap:12px;margin:8px 0 25px}
+.logo{width:48px;height:48px;border-radius:15px;background:#20c7ad;color:#06221e;display:grid;place-items:center;font-size:26px;font-weight:bold}
+h1{font-size:22px;margin:0}
+.sub,p{color:#9aabc1;line-height:1.5}
+.panel{background:#142137;border:1px solid #293951;border-radius:20px;padding:20px;margin-bottom:16px}
+h2{font-size:19px;margin:0 0 8px}
+button{border:0;border-radius:12px;padding:14px 16px;font-weight:bold;cursor:pointer}
+.primary{background:#20c7ad;color:#06221e}
+.secondary{background:#293d58;color:white}
+.gold{background:#edc45a;color:#292005}
+.danger{background:#603342;color:white}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+.hidden{display:none!important}
+.code{text-align:center;color:#edc45a;font-size:35px;font-weight:bold;letter-spacing:6px;padding:15px}
+.link{display:flex;gap:8px;align-items:center;background:#0b1423;padding:10px;border-radius:10px;margin-top:10px}
+.link span{flex:1;overflow-wrap:anywhere;font-size:12px;color:#c9d6e6}
+.status{padding:12px;background:#0c1928;border-radius:10px;margin-top:14px;color:#d8e3f0;font-size:13px}
+.drop{border:1px dashed #49617c;border-radius:15px;padding:20px;text-align:center;margin-top:16px}
+.pickers{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}
+.pickers label{background:#293d58;padding:13px;border-radius:10px;font-size:13px;font-weight:bold}
+input[type=file]{display:none}
+.bar{height:9px;background:#293d58;border-radius:10px;overflow:hidden;margin-top:8px}
+.bar div{height:100%;width:0;background:#20c7ad}
+.file{display:flex;gap:10px;align-items:center;background:#0c1928;padding:12px;border-radius:10px;margin-top:8px}
+.fileinfo{flex:1;min-width:0;overflow-wrap:anywhere;font-size:13px}
+.fileinfo small{display:block;color:#9aabc1;margin-top:4px}
+.file button{padding:9px}
+.notice{font-size:12px;color:#9aabc1;line-height:1.5;margin-top:14px}
+.error{color:#ffaaaa}
+.success{color:#8ce8c1}
+footer{text-align:center;color:#71839b;font-size:11px;margin:20px}
+@media(max-width:500px){.actions{grid-template-columns:1fr}.panel{padding:16px}.code{font-size:29px}}
+</style>
 </head>
 <body>
-  <main class="container">
-    <header>
-      <div class="logo">📲</div>
-      <h1>AbdulTransfer</h1>
-      <p>Dosyalarını iki telefon arasında kolayca aktar.</p>
-    </header>
+<main>
+<header>
+ <div class="logo">A</div>
+ <div><h1>AbdulTransfer</h1><div class="sub">Kolay ve güvenli dosya aktarımı</div></div>
+</header>
 
-    <section class="card">
-      <h2>📤 Bu telefondan gönder</h2>
-      <p class="small">
-        Önce aktarım kodu oluştur. Ardından göndermek istediğin
-        fotoğraf, video veya dosyaları seç.
-      </p>
-      <button id="createBtn" onclick="createTransfer()">Aktarım başlat</button>
+<section id="home" class="panel">
+ <h2>Telefonunu kolayca taşı</h2>
+ <p>Yeni telefonunda aktarım odası oluştur. Sana özel bağlantıyı eski telefonunda aç.</p>
+ <button id="create" class="primary" style="width:100%;margin-top:14px">Yeni telefondayım · Oda oluştur</button>
+ <div id="homeError" class="notice error"></div>
+</section>
 
-      <div id="senderArea" class="hidden">
-        <div class="code" id="senderCode"></div>
-        <p class="status">Bu kodu diğer telefonda kullan. Aktarım 30 dakika geçerlidir.</p>
-        <input id="fileInput" type="file" multiple>
-        <button id="uploadBtn" onclick="uploadFiles()">Seçilen dosyaları gönder</button>
-        <button onclick="deleteTransfer()" style="background:#e5b94e">Aktarımı iptal et</button>
-        <p id="senderStatus" class="status"></p>
-      </div>
-    </section>
+<section id="receiver" class="hidden">
+ <div class="panel">
+  <h2>Aktarım odan hazır</h2>
+  <p>Bu bağlantıyı eski telefonunda aç. Bağlantı 30 dakika geçerlidir.</p>
+  <div class="code" id="code"></div>
+  <div class="link"><span id="shareLink"></span><button id="copy" class="gold">Kopyala</button></div>
+  <div class="actions">
+   <button id="share" class="secondary">Paylaş</button>
+   <button id="finish" class="danger">Odayı kapat</button>
+  </div>
+  <div class="status" id="connection">Eski telefon bekleniyor…</div>
+ </div>
+ <div class="panel">
+  <h2>Gelen dosyalar (<span id="count">0</span>)</h2>
+  <div id="received"><p>Henüz dosya gelmedi.</p></div>
+  <button id="all" class="primary" style="width:100%;margin-top:15px" disabled>Tümünü indir</button>
+  <p class="notice">Tarayıcı, dosyaları kaydederken indirme onayı gösterebilir.</p>
+ </div>
+</section>
 
-    <section class="card">
-      <h2>📥 Bu telefona dosya al</h2>
-      <p class="small">Gönderen telefonda görünen 6 haneli kodu gir.</p>
-      <input id="receiverCode" type="text" inputmode="numeric"
-        maxlength="6" placeholder="Örnek: 123456">
-      <button onclick="loadFiles()">Dosyaları bul</button>
-      <div id="receiverStatus" class="status"></div>
-      <div id="fileList"></div>
-    </section>
-
-    <footer>
-      AbdulTransfer · Geçici dosya aktarımı
-    </footer>
-  </main>
+<section id="sender" class="panel hidden">
+ <h2>Eski telefon bağlandı</h2>
+ <p>Göndermek istediğin dosyaları seç. Birden fazla dosyayı aynı anda gönderebilirsin.</p>
+ <div class="drop">
+  <div style="font-size:34px">📁</div>
+  <strong>Dosyalarını seç</strong>
+  <div class="pickers">
+   <label for="files">Dosyaları seç</label>
+   <label for="folder">Klasör seç</label>
+  </div>
+  <input id="files" type="file" multiple>
+  <input id="folder" type="file" multiple webkitdirectory directory>
+ </div>
+ <p id="uploadStatus" class="notice">Gönderim bekleniyor</p>
+ <div class="bar"><div id="progress"></div></div>
+ <div id="senderError" class="notice error"></div>
+ <p class="notice">Klasör seçimi tarayıcı desteğine bağlıdır. Android yalnızca seçtiğin dosyalara erişim izni verir; site telefonun tüm özel verilerini tarayamaz.</p>
+</section>
+<footer>AbdulTransfer · Kişisel aktarım alanın</footer>
+</main>
 
 <script>
-let currentCode = "";
-let currentToken = "";
+const $=id=>document.getElementById(id);
+let room=null,senderToken=null,filesReceived=[],poll=null;
+const codeFromUrl=new URLSearchParams(location.search).get("code");
 
-async function createTransfer() {
-  const button = document.getElementById("createBtn");
-  button.disabled = true;
-
-  try {
-    const response = await fetch("/api/create", { method: "POST" });
-    const data = await response.json();
-
-    if (!response.ok) throw new Error(data.error || "Aktarım oluşturulamadı.");
-
-    currentCode = data.code;
-    currentToken = data.token;
-
-    document.getElementById("senderCode").textContent = data.code;
-    document.getElementById("senderArea").classList.remove("hidden");
-    document.getElementById("senderStatus").textContent =
-      "Aktarım hazır. Şimdi dosyalarını seçebilirsin.";
-  } catch (error) {
-    alert(error.message);
-  } finally {
-    button.disabled = false;
-  }
+function view(name){
+ ["home","receiver","sender"].forEach(id=>$(id).classList.add("hidden"));
+ $(name).classList.remove("hidden");
+}
+function size(n){
+ if(n<1024)return n+" B";
+ if(n<1048576)return (n/1024).toFixed(1)+" KB";
+ return (n/1048576).toFixed(1)+" MB";
+}
+async function api(url,options={}){
+ const r=await fetch(url,options);
+ const d=await r.json().catch(()=>({}));
+ if(!r.ok)throw Error(d.error||"İşlem başarısız.");
+ return d;
 }
 
-async function uploadFiles() {
-  const input = document.getElementById("fileInput");
-  const button = document.getElementById("uploadBtn");
-  const status = document.getElementById("senderStatus");
+$("create").onclick=async()=>{
+ $("create").disabled=true;
+ try{
+  room=await api("/api/create",{method:"POST",headers:{"Content-Type":"application/json"},body:"{}"});
+  $("code").textContent=room.code;
+  $("shareLink").textContent=room.transferUrl;
+  view("receiver");
+  refresh();
+  poll=setInterval(refresh,2500);
+ }catch(e){$("homeError").textContent=e.message}
+ finally{$("create").disabled=false}
+};
 
-  if (!input.files.length) {
-    status.textContent = "Önce dosya seçmelisin.";
-    return;
-  }
+$("copy").onclick=async()=>{
+ try{
+  await navigator.clipboard.writeText(room.transferUrl);
+  $("copy").textContent="Kopyalandı";
+  setTimeout(()=>$("copy").textContent="Kopyala",1500);
+ }catch(e){$("homeError").textContent="Bağlantıyı seçip kopyalayabilirsin."}
+};
 
-  const formData = new FormData();
-  for (const file of input.files) formData.append("files", file);
+$("share").onclick=async()=>{
+ if(navigator.share){
+  try{await navigator.share({title:"AbdulTransfer",url:room.transferUrl})}catch(e){}
+ }else $("copy").click();
+};
 
-  button.disabled = true;
-  status.textContent = "Dosyalar gönderiliyor. Lütfen bekle...";
-
-  try {
-    const response = await fetch("/api/upload/" + currentCode, {
-      method: "POST",
-      headers: { "X-Transfer-Token": currentToken },
-      body: formData
-    });
-
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.error || "Gönderim başarısız.");
-
-    status.textContent = data.files.length + " dosya başarıyla gönderildi.";
-    input.value = "";
-  } catch (error) {
-    status.textContent = error.message;
-  } finally {
-    button.disabled = false;
-  }
-}
-
-async function loadFiles() {
-  const code = document.getElementById("receiverCode").value.trim();
-  const status = document.getElementById("receiverStatus");
-  const list = document.getElementById("fileList");
-
-  list.innerHTML = "";
-  if (!/^\d{6}$/.test(code)) {
-    status.textContent = "Lütfen 6 haneli kodu gir.";
-    return;
-  }
-
-  status.textContent = "Aktarım aranıyor...";
-
-  try {
-    const response = await fetch("/api/files/" + code);
-    const data = await response.json();
-
-    if (!response.ok) throw new Error(data.error || "Aktarım bulunamadı.");
-
-    status.textContent = data.files.length
-      ? "Dosyaların hazır. İndirmek için dosya adına dokun."
-      : "Bu aktarımda henüz dosya yok.";
-
-    for (const file of data.files) {
-      const item = document.createElement("div");
-      item.className = "file";
-
-      const link = document.createElement("a");
-      link.href = "/api/download/" + code + "/" + encodeURIComponent(file.id);
-      link.textContent = "⬇ " + file.name;
-      link.download = file.name;
-
-      const size = document.createElement("div");
-      size.className = "small";
-      size.textContent = (file.size / (1024 * 1024)).toFixed(2) + " MB";
-
-      item.append(link, size);
-      list.appendChild(item);
-    }
-  } catch (error) {
-    status.textContent = error.message;
-  }
-}
-
-async function deleteTransfer() {
-  if (!currentCode || !confirm("Aktarımı iptal etmek istiyor musun?")) return;
-
-  const response = await fetch("/api/transfer/" + currentCode, {
-    method: "DELETE",
-    headers: { "X-Transfer-Token": currentToken }
+async function refresh(){
+ if(!room)return;
+ try{
+  const d=await api("/api/files/"+room.code,{
+   headers:{Authorization:"Bearer "+room.receiverToken}
   });
-
-  if (response.ok) {
-    document.getElementById("senderArea").classList.add("hidden");
-    document.getElementById("senderStatus").textContent = "";
-    currentCode = "";
-    currentToken = "";
-    alert("Aktarım iptal edildi.");
-  } else {
-    alert("Aktarım iptal edilemedi.");
-  }
+  renderFiles(d.files||[]);
+  $("connection").textContent="Aktarım odası açık. Gelen dosyalar burada görünecek.";
+ }catch(e){$("connection").textContent=e.message}
 }
+
+function renderFiles(files){
+ filesReceived=files;
+ $("count").textContent=files.length;
+ $("received").innerHTML="";
+ $("all").disabled=!files.length;
+ if(!files.length){$("received").innerHTML="<p>Henüz dosya gelmedi.</p>";return}
+ files.forEach(f=>{
+  const row=document.createElement("div");row.className="file";
+  const info=document.createElement("div");info.className="fileinfo";
+  const name=document.createElement("strong");name.textContent=f.name;
+  const meta=document.createElement("small");meta.textContent=size(f.size);
+  info.append(name,meta);
+  const btn=document.createElement("button");btn.className="secondary";btn.textContent="İndir";
+  btn.onclick=()=>download(f);
+  row.append(info,btn);$("received").append(row);
+ });
+}
+
+async function download(f){
+ const r=await fetch(`/api/download/${room.code}/${f.id}`,{
+  headers:{Authorization:"Bearer "+room.receiverToken}
+ });
+ if(!r.ok){alert("Dosya indirilemedi.");return}
+ const blob=await r.blob();
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement("a");a.href=url;a.download=f.name;
+ document.body.append(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),30000);
+}
+
+$("all").onclick=async()=>{
+ for(const f of filesReceived){
+  await download(f);
+  await new Promise(r=>setTimeout(r,400));
+ }
+};
+
+$("finish").onclick=async()=>{
+ if(!confirm("Aktarım odasını kapatmak ve geçici dosyaları silmek istiyor musun?"))return;
+ try{
+  await api("/api/finish/"+room.code,{
+   method:"POST",headers:{Authorization:"Bearer "+room.receiverToken}
+  });
+ }catch(e){}
+ clearInterval(poll);room=null;view("home");
+};
+
+async function join(code){
+ view("sender");
+ try{
+  const d=await api("/api/join",{
+   method:"POST",
+   headers:{"Content-Type":"application/json"},
+   body:JSON.stringify({code})
+  });
+  senderToken=d.senderToken;
+ }catch(e){
+  $("senderError").textContent=e.message;
+  document.querySelector(".drop").classList.add("hidden");
+ }
+}
+
+function sendFiles(selected){
+ if(!senderToken||!selected.length)return;
+ const data=new FormData();
+ Array.from(selected).forEach(f=>{
+  data.append("files",f,f.webkitRelativePath||f.name);
+ });
+ $("uploadStatus").textContent=selected.length+" dosya gönderiliyor…";
+ $("senderError").textContent="";
+ $("progress").style.width="0%";
+ const xhr=new XMLHttpRequest();
+ xhr.open("POST","/api/upload/"+encodeURIComponent(codeFromUrl));
+ xhr.setRequestHeader("Authorization","Bearer "+senderToken);
+ xhr.upload.onprogress=e=>{
+  if(e.lengthComputable)$("progress").style.width=Math.round(e.loaded/e.total*100)+"%";
+ };
+ xhr.onload=()=>{
+  let result={};try{result=JSON.parse(xhr.responseText)}catch(e){}
+  if(xhr.status>=200&&xhr.status<300){
+   $("uploadStatus").textContent="Dosyalar gönderildi.";
+   $("progress").style.width="100%";
+   $("senderError").className="notice success";
+   $("senderError").textContent="Aktarım tamamlandı. Yeni telefondan dosyaları indirebilirsin.";
+  }else{
+   $("uploadStatus").textContent="Gönderim başarısız.";
+   $("senderError").textContent=result.error||"Dosyalar gönderilemedi.";
+  }
+ };
+ xhr.onerror=()=>{$("senderError").textContent="İnternet bağlantısı hatası."};
+ xhr.send(data);
+}
+
+$("files").onchange=e=>sendFiles(e.target.files);
+$("folder").onchange=e=>sendFiles(e.target.files);
+
+if(codeFromUrl){
+ if(/^\d{8}$/.test(codeFromUrl))join(codeFromUrl);
+ else{view("sender");$("senderError").textContent="Aktarım bağlantısı geçersiz."}
+}else view("home");
 </script>
 </body>
 </html>
