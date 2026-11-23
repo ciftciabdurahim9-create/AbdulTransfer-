@@ -260,11 +260,13 @@ function sendFiles(selected){
 $("files").onchange=e=>sendFiles(e.target.files);
 $("folder").onchange=e=>sendFiles(e.target.files);
 
-if(codeFromUrl){
+ if(codeFromUrl){
  if(/^\d{8}$/.test(codeFromUrl))join(codeFromUrl);
  else{view("sender");$("senderError").textContent="Aktarım bağlantısı geçersiz."}
 }else view("home");
-<script src="/android-transfer.js">
 </script>
+
+<script src="/android-transfer.js"></script>
+
 </body>
 </html>
