@@ -16,24 +16,28 @@ const MAX_FILES = 20;
 
 fs.mkdirSync(TEMP_DIR, { recursive: true });
 
-app.use(express.json());
+app.disable("x-powered-by");
+app.use(express.json({ limit: "10kb" }));
 app.use(express.static(path.join(__dirname, "public")));
 
-const limiter = rateLimit({
+const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   limit: 100,
   standardHeaders: true,
-  legacyHeaders: false
+  legacyHeaders: false,
+  message: { error: "Çok fazla istek gönderdin. Biraz bekle." }
 });
 
-app.use("/api", limiter);
+app.use("/api", apiLimiter);
 
 const transfers = new Map();
 
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, TEMP_DIR),
+  destination: (req, file, cb) => {
+    cb(null, TEMP_DIR);
+  },
   filename: (req, file, cb) => {
-    cb(null, crypto.randomBytes(16).toString("hex"));
+    cb(null, crypto.randomBytes(24).toString("hex"));
   }
 });
 
@@ -41,7 +45,8 @@ const upload = multer({
   storage,
   limits: {
     fileSize: MAX_FILE_SIZE,
-    files: MAX_FILES
+    files: MAX_FILES,
+    fields: 0
   }
 });
 
@@ -49,7 +54,7 @@ function createCode() {
   let code;
 
   do {
-    code = String(Math.floor(100000 + Math.random() * 900000));
+    code = String(crypto.randomInt(100000, 1000000));
   } while (transfers.has(code));
 
   return code;
@@ -60,7 +65,7 @@ function getTransfer(code) {
 
   if (!transfer) return null;
 
-  if (Date.now() > transfer.expiresAt) {
+  if (Date.now() >= transfer.expiresAt) {
     deleteTransfer(code);
     return null;
   }
@@ -70,15 +75,51 @@ function getTransfer(code) {
 
 function deleteTransfer(code) {
   const transfer = transfers.get(String(code));
+
   if (!transfer) return;
 
   for (const file of transfer.files) {
     try {
       fs.unlinkSync(file.path);
-    } catch {}
+    } catch (error) {
+      console.error("Dosya silinemedi:", error.message);
+    }
   }
 
   transfers.delete(String(code));
+}
+
+function safeFileName(name) {
+  return path.basename(String(name))
+    .replace(/[\/\\<>:"|?*\x00-\x1F]/g, "_")
+    .slice(0, 180) || "dosya";
+}
+
+function checkUploadAccess(req, res, next) {
+  const transfer = getTransfer(req.params.code);
+  const token = req.headers["x-transfer-token"];
+
+  if (!transfer) {
+    return res.status(404).json({
+      error: "Aktarım bulunamadı veya süresi doldu."
+    });
+  }
+
+  if (
+    typeof token !== "string" ||
+    token.length !== transfer.token.length ||
+    !crypto.timingSafeEqual(
+      Buffer.from(token),
+      Buffer.from(transfer.token)
+    )
+  ) {
+    return res.status(403).json({
+      error: "Aktarım yetkisi geçersiz."
+    });
+  }
+
+  req.transfer = transfer;
+  next();
 }
 
 app.post("/api/create", (req, res) => {
@@ -100,60 +141,43 @@ app.post("/api/create", (req, res) => {
   });
 });
 
-app.post("/api/upload/:code", upload.array("files", MAX_FILES), (req, res) => {
-  const transfer = getTransfer(req.params.code);
+app.post(
+  "/api/upload/:code",
+  checkUploadAccess,
+  upload.array("files", MAX_FILES),
+  (req, res) => {
+    const transfer = req.transfer;
 
-  if (!transfer) {
-    for (const file of req.files || []) {
-      try { fs.unlinkSync(file.path); } catch {}
-    }
+    const uploadedFiles = (req.files || []).map(file => {
+      const item = {
+        id: file.filename,
+        name: safeFileName(file.originalname),
+        size: file.size,
+        path: file.path
+      };
 
-    return res.status(404).json({
-      error: "Aktarım bulunamadı veya süresi doldu."
+      transfer.files.push(item);
+
+      return {
+        id: item.id,
+        name: item.name,
+        size: item.size
+      };
+    });
+
+    res.json({
+      success: true,
+      files: uploadedFiles
     });
   }
-
-  const token = req.headers["x-transfer-token"];
-
-  if (!token || token !== transfer.token) {
-    for (const file of req.files || []) {
-      try { fs.unlinkSync(file.path); } catch {}
-    }
-
-    return res.status(403).json({
-      error: "Aktarım yetkisi geçersiz."
-    });
-  }
-
-  const uploaded = (req.files || []).map(file => {
-    const item = {
-      id: file.filename,
-      name: path.basename(file.originalname).slice(0, 180),
-      size: file.size,
-      path: file.path
-    };
-
-    transfer.files.push(item);
-
-    return {
-      id: item.id,
-      name: item.name,
-      size: item.size
-    };
-  });
-
-  res.json({
-    success: true,
-    files: uploaded
-  });
-});
+);
 
 app.get("/api/files/:code", (req, res) => {
   const transfer = getTransfer(req.params.code);
 
   if (!transfer) {
     return res.status(404).json({
-      error: "Kod bulunamadı veya süresi doldu."
+      error: "Aktarım bulunamadı veya süresi doldu."
     });
   }
 
@@ -171,10 +195,14 @@ app.get("/api/download/:code/:id", (req, res) => {
   const transfer = getTransfer(req.params.code);
 
   if (!transfer) {
-    return res.status(404).send("Aktarım bulunamadı veya süresi doldu.");
+    return res.status(404).send(
+      "Aktarım bulunamadı veya süresi doldu."
+    );
   }
 
-  const file = transfer.files.find(item => item.id === req.params.id);
+  const file = transfer.files.find(
+    item => item.id === req.params.id
+  );
 
   if (!file || !fs.existsSync(file.path)) {
     return res.status(404).send("Dosya bulunamadı.");
@@ -183,38 +211,58 @@ app.get("/api/download/:code/:id", (req, res) => {
   res.download(file.path, file.name);
 });
 
-app.delete("/api/transfer/:code", (req, res) => {
-  const transfer = getTransfer(req.params.code);
+app.delete(
+  "/api/transfer/:code",
+  checkUploadAccess,
+  (req, res) => {
+    deleteTransfer(req.params.code);
 
-  if (!transfer) {
-    return res.status(404).json({ error: "Aktarım bulunamadı." });
+    res.json({
+      success: true,
+      message: "Aktarım silindi."
+    });
   }
+);
 
-  const token = req.headers["x-transfer-token"];
-
-  if (!token || token !== transfer.token) {
-    return res.status(403).json({ error: "Yetkisiz işlem." });
-  }
-
-  deleteTransfer(req.params.code);
-  res.json({ success: true });
+app.get("/api/status", (req, res) => {
+  res.json({
+    name: "AbdulTransfer",
+    status: "active",
+    version: "1.0.0"
+  });
 });
 
 setInterval(() => {
   for (const [code, transfer] of transfers.entries()) {
-    if (Date.now() > transfer.expiresAt) {
+    if (Date.now() >= transfer.expiresAt) {
       deleteTransfer(code);
     }
   }
 }, 60 * 1000);
 
-app.get("/api/status", (req, res) => {
-  res.json({
-    name: "AbdulTransfer",
-    status: "active"
+app.use((err, req, res, next) => {
+  console.error("Sunucu hatası:", err.message);
+
+  if (err instanceof multer.MulterError) {
+    if (req.files) {
+      for (const file of req.files) {
+        try {
+          fs.unlinkSync(file.path);
+        } catch {}
+      }
+    }
+
+    return res.status(400).json({
+      error: "Dosya yükleme sınırı aşıldı veya dosya yüklenemedi."
+    });
+  }
+
+  res.status(500).json({
+    error: "Sunucuda beklenmeyen bir hata oluştu."
   });
 });
 
 app.listen(PORT, () => {
   console.log(`AbdulTransfer çalışıyor: ${PORT}`);
 });
+          
