@@ -1,15 +1,15 @@
 
 {
   "name": "abdultransfer",
-  "version": "1.0.0",
-  "description": "AbdulTransfer - Güvenli dosya aktarımı",
+  "version": "2.0.0",
+  "description": "AbdulTransfer - dosya aktarımı",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
     "express": "^4.21.2",
-    "multer": "^1.4.5-lts.2",
-    "express-rate-limit": "^7.5.0"
+    "express-rate-limit": "^7.5.0",
+    "multer": "^1.4.5-lts.2"
   }
 }
