@@ -1,0 +1,243 @@
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101827">
+  <title>AbdulTransfer</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 24px 15px;
+      font-family: Arial, sans-serif;
+      background: #101827;
+      color: #f8fafc;
+    }
+    .container { max-width: 650px; margin: 35px auto; }
+    header { text-align: center; margin-bottom: 28px; }
+    .logo { font-size: 48px; }
+    h1 { margin: 8px 0; font-size: 32px; }
+    header p { color: #aab7c8; }
+    .card {
+      background: #1c293b;
+      border: 1px solid #34445a;
+      border-radius: 18px;
+      padding: 22px;
+      margin-bottom: 18px;
+    }
+    h2 { margin-top: 0; font-size: 21px; }
+    button, input[type="text"], input[type="file"] {
+      width: 100%;
+      padding: 14px;
+      border-radius: 10px;
+      font-size: 15px;
+    }
+    button {
+      border: 0;
+      background: #14b8a6;
+      color: #062b29;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 12px;
+    }
+    button:disabled { opacity: .55; cursor: not-allowed; }
+    input[type="text"], input[type="file"] {
+      border: 1px solid #52647b;
+      background: #101827;
+      color: white;
+      margin-top: 8px;
+    }
+    .code {
+      font-size: 34px;
+      letter-spacing: 7px;
+      font-weight: bold;
+      text-align: center;
+      padding: 18px;
+      color: #e5b94e;
+    }
+    .status { color: #aab7c8; margin-top: 12px; line-height: 1.5; }
+    .file {
+      padding: 12px;
+      background: #101827;
+      border-radius: 9px;
+      margin-top: 9px;
+      overflow-wrap: anywhere;
+    }
+    .file a { color: #5eead4; }
+    .small { font-size: 13px; color: #aab7c8; line-height: 1.5; }
+    .hidden { display: none; }
+    footer { text-align: center; color: #8493a8; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <header>
+      <div class="logo">📲</div>
+      <h1>AbdulTransfer</h1>
+      <p>Dosyalarını iki telefon arasında kolayca aktar.</p>
+    </header>
+
+    <section class="card">
+      <h2>📤 Bu telefondan gönder</h2>
+      <p class="small">
+        Önce aktarım kodu oluştur. Ardından göndermek istediğin
+        fotoğraf, video veya dosyaları seç.
+      </p>
+      <button id="createBtn" onclick="createTransfer()">Aktarım başlat</button>
+
+      <div id="senderArea" class="hidden">
+        <div class="code" id="senderCode"></div>
+        <p class="status">Bu kodu diğer telefonda kullan. Aktarım 30 dakika geçerlidir.</p>
+        <input id="fileInput" type="file" multiple>
+        <button id="uploadBtn" onclick="uploadFiles()">Seçilen dosyaları gönder</button>
+        <button onclick="deleteTransfer()" style="background:#e5b94e">Aktarımı iptal et</button>
+        <p id="senderStatus" class="status"></p>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>📥 Bu telefona dosya al</h2>
+      <p class="small">Gönderen telefonda görünen 6 haneli kodu gir.</p>
+      <input id="receiverCode" type="text" inputmode="numeric"
+        maxlength="6" placeholder="Örnek: 123456">
+      <button onclick="loadFiles()">Dosyaları bul</button>
+      <div id="receiverStatus" class="status"></div>
+      <div id="fileList"></div>
+    </section>
+
+    <footer>
+      AbdulTransfer · Geçici dosya aktarımı
+    </footer>
+  </main>
+
+<script>
+let currentCode = "";
+let currentToken = "";
+
+async function createTransfer() {
+  const button = document.getElementById("createBtn");
+  button.disabled = true;
+
+  try {
+    const response = await fetch("/api/create", { method: "POST" });
+    const data = await response.json();
+
+    if (!response.ok) throw new Error(data.error || "Aktarım oluşturulamadı.");
+
+    currentCode = data.code;
+    currentToken = data.token;
+
+    document.getElementById("senderCode").textContent = data.code;
+    document.getElementById("senderArea").classList.remove("hidden");
+    document.getElementById("senderStatus").textContent =
+      "Aktarım hazır. Şimdi dosyalarını seçebilirsin.";
+  } catch (error) {
+    alert(error.message);
+  } finally {
+    button.disabled = false;
+  }
+}
+
+async function uploadFiles() {
+  const input = document.getElementById("fileInput");
+  const button = document.getElementById("uploadBtn");
+  const status = document.getElementById("senderStatus");
+
+  if (!input.files.length) {
+    status.textContent = "Önce dosya seçmelisin.";
+    return;
+  }
+
+  const formData = new FormData();
+  for (const file of input.files) formData.append("files", file);
+
+  button.disabled = true;
+  status.textContent = "Dosyalar gönderiliyor. Lütfen bekle...";
+
+  try {
+    const response = await fetch("/api/upload/" + currentCode, {
+      method: "POST",
+      headers: { "X-Transfer-Token": currentToken },
+      body: formData
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Gönderim başarısız.");
+
+    status.textContent = data.files.length + " dosya başarıyla gönderildi.";
+    input.value = "";
+  } catch (error) {
+    status.textContent = error.message;
+  } finally {
+    button.disabled = false;
+  }
+}
+
+async function loadFiles() {
+  const code = document.getElementById("receiverCode").value.trim();
+  const status = document.getElementById("receiverStatus");
+  const list = document.getElementById("fileList");
+
+  list.innerHTML = "";
+  if (!/^\d{6}$/.test(code)) {
+    status.textContent = "Lütfen 6 haneli kodu gir.";
+    return;
+  }
+
+  status.textContent = "Aktarım aranıyor...";
+
+  try {
+    const response = await fetch("/api/files/" + code);
+    const data = await response.json();
+
+    if (!response.ok) throw new Error(data.error || "Aktarım bulunamadı.");
+
+    status.textContent = data.files.length
+      ? "Dosyaların hazır. İndirmek için dosya adına dokun."
+      : "Bu aktarımda henüz dosya yok.";
+
+    for (const file of data.files) {
+      const item = document.createElement("div");
+      item.className = "file";
+
+      const link = document.createElement("a");
+      link.href = "/api/download/" + code + "/" + encodeURIComponent(file.id);
+      link.textContent = "⬇ " + file.name;
+      link.download = file.name;
+
+      const size = document.createElement("div");
+      size.className = "small";
+      size.textContent = (file.size / (1024 * 1024)).toFixed(2) + " MB";
+
+      item.append(link, size);
+      list.appendChild(item);
+    }
+  } catch (error) {
+    status.textContent = error.message;
+  }
+}
+
+async function deleteTransfer() {
+  if (!currentCode || !confirm("Aktarımı iptal etmek istiyor musun?")) return;
+
+  const response = await fetch("/api/transfer/" + currentCode, {
+    method: "DELETE",
+    headers: { "X-Transfer-Token": currentToken }
+  });
+
+  if (response.ok) {
+    document.getElementById("senderArea").classList.add("hidden");
+    document.getElementById("senderStatus").textContent = "";
+    currentCode = "";
+    currentToken = "";
+    alert("Aktarım iptal edildi.");
+  } else {
+    alert("Aktarım iptal edilemedi.");
+  }
+}
+</script>
+</body>
+</html>
