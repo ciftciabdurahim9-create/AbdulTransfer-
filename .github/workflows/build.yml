@@ -28,9 +28,43 @@ jobs:
         working-directory: android-app
         run: |
           npm install
+
           mkdir -p www
+
           echo '<!doctype html><html><head><meta charset="utf-8"></head><body>AbdulTransfer</body></html>' > www/index.html
+
           npx cap add android
+
+          mkdir -p android/app/src/main/java/com/abdultransfer/app
+
+          cp native/MainActivity.java android/app/src/main/java/com/abdultransfer/app/MainActivity.java
+
+          python3 - <<'PY'
+          from pathlib import Path
+
+          manifest = Path("android/app/src/main/AndroidManifest.xml")
+          content = manifest.read_text(encoding="utf-8")
+
+          permissions = [
+              '<uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />',
+              '<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="29" />'
+          ]
+
+          missing = [
+              permission for permission in permissions
+              if permission not in content
+          ]
+
+          if missing:
+              content = content.replace(
+                  "<application",
+                  "\n    ".join(missing) + "\n    <application",
+                  1
+              )
+
+          manifest.write_text(content, encoding="utf-8")
+          PY
+
           npx cap sync android
 
       - name: APK oluştur
