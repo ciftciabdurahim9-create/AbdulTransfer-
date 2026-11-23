@@ -9,33 +9,46 @@ const path = require("path");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Render proxy ayarı
+app.set("trust proxy", 1);
+app.disable("x-powered-by");
+
 const TEMP_DIR = path.join("/tmp", "abdultransfer");
+const PUBLIC_DIR = path.join(__dirname, "public");
+
 const EXPIRY_MS = 30 * 60 * 1000;
 const MAX_FILE_SIZE = 100 * 1024 * 1024;
 const MAX_FILES = 20;
 
 fs.mkdirSync(TEMP_DIR, { recursive: true });
 
-app.disable("x-powered-by");
 app.use(express.json({ limit: "10kb" }));
-app.use(express.static(path.join(__dirname, "public")));
 
+// Statik dosyalar
+app.use(express.static(PUBLIC_DIR));
+
+// API istek sınırı
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   limit: 100,
   standardHeaders: true,
   legacyHeaders: false,
-  message: { error: "Çok fazla istek gönderdin. Biraz bekle." }
+  message: {
+    error: "Çok fazla istek gönderdin. Lütfen biraz bekle."
+  }
 });
 
 app.use("/api", apiLimiter);
 
+// Aktarım verileri
 const transfers = new Map();
 
+// Dosya depolama
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, TEMP_DIR);
   },
+
   filename: (req, file, cb) => {
     cb(null, crypto.randomBytes(24).toString("hex"));
   }
@@ -50,6 +63,14 @@ const upload = multer({
   }
 });
 
+// Güvenli dosya adı
+function safeFileName(name) {
+  return path.basename(String(name))
+    .replace(/[\/\\<>:"|?*\x00-\x1F]/g, "_")
+    .slice(0, 180) || "dosya";
+}
+
+// Benzersiz aktarım kodu
 function createCode() {
   let code;
 
@@ -60,6 +81,7 @@ function createCode() {
   return code;
 }
 
+// Aktarım kontrolü
 function getTransfer(code) {
   const transfer = transfers.get(String(code));
 
@@ -73,6 +95,7 @@ function getTransfer(code) {
   return transfer;
 }
 
+// Aktarımı ve dosyaları sil
 function deleteTransfer(code) {
   const transfer = transfers.get(String(code));
 
@@ -82,19 +105,14 @@ function deleteTransfer(code) {
     try {
       fs.unlinkSync(file.path);
     } catch (error) {
-      console.error("Dosya silinemedi:", error.message);
+      console.error("Dosya silme hatası:", error.message);
     }
   }
 
   transfers.delete(String(code));
 }
 
-function safeFileName(name) {
-  return path.basename(String(name))
-    .replace(/[\/\\<>:"|?*\x00-\x1F]/g, "_")
-    .slice(0, 180) || "dosya";
-}
-
+// Token doğrulama
 function checkUploadAccess(req, res, next) {
   const transfer = getTransfer(req.params.code);
   const token = req.headers["x-transfer-token"];
@@ -122,6 +140,20 @@ function checkUploadAccess(req, res, next) {
   next();
 }
 
+// Ana sayfa
+app.get("/", (req, res) => {
+  const indexPath = path.join(PUBLIC_DIR, "index.html");
+
+  if (!fs.existsSync(indexPath)) {
+    return res.status(404).send(
+      "AbdulTransfer ana sayfası bulunamadı. public/index.html dosyasını kontrol et."
+    );
+  }
+
+  res.sendFile(indexPath);
+});
+
+// Yeni aktarım oluştur
 app.post("/api/create", (req, res) => {
   const code = createCode();
   const token = crypto.randomBytes(32).toString("hex");
@@ -141,6 +173,7 @@ app.post("/api/create", (req, res) => {
   });
 });
 
+// Dosya yükle
 app.post(
   "/api/upload/:code",
   checkUploadAccess,
@@ -172,6 +205,7 @@ app.post(
   }
 );
 
+// Aktarımdaki dosyaları listele
 app.get("/api/files/:code", (req, res) => {
   const transfer = getTransfer(req.params.code);
 
@@ -191,6 +225,7 @@ app.get("/api/files/:code", (req, res) => {
   });
 });
 
+// Dosya indir
 app.get("/api/download/:code/:id", (req, res) => {
   const transfer = getTransfer(req.params.code);
 
@@ -211,6 +246,7 @@ app.get("/api/download/:code/:id", (req, res) => {
   res.download(file.path, file.name);
 });
 
+// Aktarımı iptal et
 app.delete(
   "/api/transfer/:code",
   checkUploadAccess,
@@ -224,6 +260,7 @@ app.delete(
   }
 );
 
+// Sunucu durumunu kontrol et
 app.get("/api/status", (req, res) => {
   res.json({
     name: "AbdulTransfer",
@@ -232,6 +269,7 @@ app.get("/api/status", (req, res) => {
   });
 });
 
+// Süresi dolan aktarımları temizle
 setInterval(() => {
   for (const [code, transfer] of transfers.entries()) {
     if (Date.now() >= transfer.expiresAt) {
@@ -240,8 +278,9 @@ setInterval(() => {
   }
 }, 60 * 1000);
 
+// Hata yönetimi
 app.use((err, req, res, next) => {
-  console.error("Sunucu hatası:", err.message);
+  console.error("Sunucu hatası:", err);
 
   if (err instanceof multer.MulterError) {
     if (req.files) {
@@ -262,7 +301,8 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`AbdulTransfer çalışıyor: ${PORT}`);
+// Sunucuyu başlat
+app.listen(PORT, "0.0.0.0", () => {
+  console.log("AbdulTransfer çalışıyor: " + PORT);
 });
-          
+  
