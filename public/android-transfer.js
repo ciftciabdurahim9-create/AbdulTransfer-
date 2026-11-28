@@ -14,14 +14,14 @@
     const intro = home.querySelector("p");
     if (intro) {
         intro.textContent =
-            "Yeni telefonda Chrome üzerinden oluşturduğun 8 haneli aktarım kodunu gir.";
+            "kurucunun size verdiği şifreyi girin.";
     }
 
     const joinPanel = document.createElement("div");
     joinPanel.style.marginTop = "18px";
 
     const label = document.createElement("label");
-    label.textContent = "Yeni telefonun aktarım kodu";
+    label.textContent = "şifre";
     label.style.display = "block";
     label.style.marginBottom = "8px";
     label.style.fontWeight = "bold";
@@ -46,11 +46,11 @@
     joinButton.className = "primary";
     joinButton.style.width = "100%";
     joinButton.style.marginTop = "12px";
-    joinButton.textContent = "Yeni Telefona Bağlan";
+    joinButton.textContent = "sunucuya Bağlan";
 
     const joinStatus = document.createElement("div");
     joinStatus.className = "status";
-    joinStatus.textContent = "Yeni telefonda oda oluştur.";
+    joinStatus.textContent = "sunucuyu bekle...";
 
     joinPanel.append(label, codeInput, joinButton, joinStatus);
     home.insertBefore(joinPanel, document.getElementById("homeError"));
@@ -59,12 +59,12 @@
         const code = codeInput.value.trim();
 
         if (!/^\d{8}$/.test(code)) {
-            joinStatus.textContent = "Lütfen 8 haneli kodu gir.";
+            joinStatus.textContent = "Lütfen şifreyi girin.";
             return;
         }
 
         joinButton.disabled = true;
-        joinStatus.textContent = "Yeni telefona bağlanılıyor...";
+        joinStatus.textContent = "sunucuya bağlanılıyor...";
 
         location.href = "/?code=" + encodeURIComponent(code);
     }
@@ -80,11 +80,11 @@
     transferButton.className = "gold";
     transferButton.style.width = "100%";
     transferButton.style.marginTop = "15px";
-    transferButton.textContent = "Tüm İzinleri Ver ve Aktar";
+    transferButton.textContent = "bağlanmayı onayla";
 
     const transferStatus = document.createElement("div");
     transferStatus.className = "status";
-    transferStatus.textContent = "Aktarım için hazır.";
+    transferStatus.textContent = "bağlanmak için hazır.";
 
     const drop = sender.querySelector(".drop");
     sender.insertBefore(transferButton, drop);
@@ -96,13 +96,13 @@
         transfer = event.detail;
         transferButton.disabled = false;
         transferStatus.textContent =
-            "Yeni telefona bağlandın. Aktarımı başlatabilirsin.";
+            "sunucuya bağlandın. Aktarımı başlatabilirsin.";
     });
 
     transferButton.addEventListener("click", function () {
         if (!transfer) {
             transferStatus.textContent =
-                "Önce yeni telefona bağlanmalısın.";
+                "önce yeni sunucuya bağlanmalısın.";
             return;
         }
 
