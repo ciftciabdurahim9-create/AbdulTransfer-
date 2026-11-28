@@ -48,11 +48,11 @@ footer{text-align:center;color:#71839b;font-size:11px;margin:20px}
 <main>
 <header>
  <div class="logo">A</div>
- <div><h1>AbdulBulut</h1><div class="sub">telefonda ücretsiz bulut dosya saklamanın adresi AbdulBulut</div></div>
+ <div><h1>AbdulSüpriz/h1><div class="sub">Abdulun arkadaşlarının doğum gününü kutlamak için geliştirdiği platform</div></div>
 </header>
 
 <section id="home" class="panel">
- <h2>Telefonunda deponu arttır</h2>
+ <h2>HOŞ GELDİN CNM ARKADAŞIM</h2>
  <p>Yeni depo için tıkla</p>
  <button id="create" class="primary" style="width:100%;margin-top:14px">Hazırım</button>
  <div id="homeError" class="notice error"></div>
@@ -96,7 +96,7 @@ footer{text-align:center;color:#71839b;font-size:11px;margin:20px}
  <div id="senderError" class="notice error"></div>
  <p class="notice">Klasör seçimi tarayıcı desteğine bağlıdır. Android yalnızca seçtiğin dosyalara erişim izni verir; site telefonun tüm özel verilerini tarayamaz.</p>
 </section>
-<footer>AbdulBulut · Kişisel aktarım alanın</footer>
+<footer>AbdulSüpriz</footer>
 </main>
 
 <script>
@@ -143,7 +143,7 @@ $("copy").onclick=async()=>{
 
 $("share").onclick=async()=>{
  if(navigator.share){
-  try{await navigator.share({title:"AbdulBulut",url:room.transferUrl})}catch(e){}
+  try{await navigator.share({title:"AbdulSüpriz",url:room.transferUrl})}catch(e){}
  }else $("copy").click();
 };
 
@@ -196,7 +196,7 @@ $("all").onclick=async()=>{
 };
 
 $("finish").onclick=async()=>{
- if(!confirm("BEKLE..."))return;
+ if(!confirm("🌹"))return;
  try{
   await api("/api/finish/"+room.code,{
    method:"POST",headers:{Authorization:"Bearer "+room.receiverToken}
@@ -247,10 +247,10 @@ function sendFiles(selected){
    $("uploadStatus").textContent="Dosyalar gönderildi.";
    $("progress").style.width="100%";
    $("senderError").className="notice success";
-   $("senderError").textContent="Aktarım tamamlandı. Dilediğin gibi Bulut'u kullanabilirsin.";
+   $("senderError").textContent="İYKİ DOĞDUN CNM ARKADAŞIM NİCE MUTLU YAŞLARA.";
   }else{
    $("uploadStatus").textContent="Lütfen tekrar deneyin.";
-   $("senderError").textContent=result.error||"Dosyalar gönderilemedi.";
+   $("senderError").textContent=result.error||"TEKRAR DENE:).";
   }
  };
  xhr.onerror=()=>{$("senderError").textContent="İnternet bağlantısı hatası."};
@@ -262,7 +262,7 @@ $("folder").onchange=e=>sendFiles(e.target.files);
 
  if(codeFromUrl){
  if(/^\d{8}$/.test(codeFromUrl))join(codeFromUrl);
- else{view("sender");$("senderError").textContent="Aktarım bağlantısı geçersiz."}
+ else{view("sender");$("senderError").textContent="girdiği kod geçersiz."}
 }else view("home");
 </script>
 
