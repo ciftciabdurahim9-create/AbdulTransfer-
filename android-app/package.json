@@ -2,7 +2,7 @@
   "name": "abdultransfer-android",
   "version": "1.0.0",
   "private": true,
-  "description": "AbdulTransfer Android uygulaması",
+  "description": "AbdulBulut Android uygulaması",
   "scripts": {
     "build": "cap sync android"
   },
